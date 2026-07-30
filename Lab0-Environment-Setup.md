@@ -28,6 +28,8 @@ The following evidence files were available in the workspace root:
 - ![LocalStack web interface evidence](localhostweb.jpeg)
 - ![AWS CLI LocalStack configuration evidence](otp%20aws%20cli%20configuration.jpeg)
 - ![Kubernetes cluster evidence](kubernetes%20cluster.jpg)
+- ![AWS CLI evidence](lab0-images/AWS.jpg)
+
 
 ## 3. Step-by-step report
 
