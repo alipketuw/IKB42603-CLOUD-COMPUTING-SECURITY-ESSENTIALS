@@ -30,7 +30,7 @@ Docker was confirmed as installed:
 Docker version 28.5.2+dfsg4, build 9cc6dea...
 ```
 
-![Docker version evidence](docker%20version.png)
+![Docker version evidence](lab1-images/docker%20version.png)
 
 LocalStack was started and its health endpoint returned the emulated services as `available`, including IAM, STS, and S3.
 
@@ -39,7 +39,7 @@ docker start localstack
 curl http://localhost:4566/_localstack/health
 ```
 
-![LocalStack health evidence](start%20localstack.png)
+![LocalStack health evidence](lab1-images/start%20localstack.png)
 
 ### 3.2 Configure the AWS CLI and verify the operating identity
 
@@ -51,7 +51,7 @@ Account: 000000000000
 Arn:     arn:aws:iam::000000000000:root
 ```
 
-![Redacted AWS CLI and caller identity evidence](evidence_redacted/aws-configure-redacted.png)
+![Redacted AWS CLI and caller identity evidence](lab1-images/aws-configure-redacted.png)
 
 ### 3.3 Task 2 — Create a least-privilege administrator
 
@@ -67,11 +67,11 @@ aws $EP iam add-user-to-group --group-name Admins \
 aws $EP iam get-group --group-name Admins
 ```
 
-![Admins group creation](create%20group%20admins.png)
+![Admins group creation](lab1-images/create%20group%20admins.png)
 
 The verification output showed `CloudAdmin_alip` as a member of `Admins`. Unique user and group IDs have been omitted from this report.
 
-![CloudAdmin membership verification](2.2%202.3.png)
+![CloudAdmin membership verification](lab1-images/2.2%202.3.png)
 
 ### 3.4 Task 3 — Enforce least privilege with a scoped policy
 
@@ -84,7 +84,7 @@ aws $EP iam attach-user-policy --user-name Analyst_alip \
 aws $EP iam list-attached-user-policies --user-name Analyst_alip
 ```
 
-![Analyst user and policy attachment](2.4.png)
+![Analyst user and policy attachment](lab1-images/2.4.png)
 
 The verification output contained one attached policy:
 
@@ -93,7 +93,7 @@ PolicyName: AmazonS3ReadOnlyAccess
 PolicyArn:  arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
 ```
 
-![Analyst attached-policy verification](3.1.png)
+![Analyst attached-policy verification](lab1-images/3.1.png)
 
 If this Analyst identity were compromised, the attacker would inherit only its limited S3 read permissions. The attacker would not receive administrative capabilities to create identities, change policies, or modify and delete resources outside the granted scope. This reduces the **blast radius**: fewer actions and resources are exposed, so the potential damage is substantially smaller than for a compromised administrator.
 
@@ -109,14 +109,14 @@ Initial status:  Active
 Final status:    Inactive
 ```
 
-![Redacted access-key creation and listing evidence](evidence_redacted/access-key-redacted.png)
+![Redacted access-key creation and listing evidence](lab1-images/access-key-redacted.png)
 
 ```bash
 aws $EP iam update-access-key --user-name Analyst_alip \
   --access-key-id [REDACTED] --status Inactive
 ```
 
-![Redacted access-key deactivation evidence](evidence_redacted/access-key-deactivation-redacted.png)
+![Redacted access-key deactivation evidence](lab1-images/access-key-deactivation-redacted.png)
 
 Long-lived keys increase risk because they remain usable until explicitly disabled or deleted. If copied from a device, shell history, log, or repository, an attacker may retain access for a long time. Real deployments should prefer short-lived role credentials, store secrets securely, rotate keys, and never create root access keys or commit credentials to source control.
 
@@ -126,7 +126,7 @@ Long-lived keys increase risk because they remain usable until explicitly disabl
 
 A local kind cluster named `ccse-lab1` was created. `kubectl cluster-info` confirmed that the control plane and CoreDNS were running, and `kubectl get nodes` showed `ccse-lab1-control-plane` in the `Ready` state.
 
-![Local Kubernetes cluster evidence](create%20local%20kubernets%20cluster.png)
+![Local Kubernetes cluster evidence](lab1-images/create%20local%20kubernets%20cluster.png)
 
 ### 4.2 Task 5 — Separate environments with namespaces
 
@@ -138,7 +138,7 @@ kubectl create namespace prod
 kubectl get namespaces
 ```
 
-![Namespace evidence](task%205.png)
+![Namespace evidence](lab1-images/task%205.png)
 
 Namespaces provide logical separation within the same cluster and allow namespaced RBAC rules to restrict access to a specific environment.
 
@@ -154,7 +154,7 @@ kubectl create rolebinding dev-user-binding -n dev \
   --role=pod-reader --serviceaccount=dev:dev-user
 ```
 
-![Kubernetes Role and RoleBinding evidence](task%206.png)
+![Kubernetes Role and RoleBinding evidence](lab1-images/task%206.png)
 
 ### 4.4 Task 7 — Test that access control works
 
@@ -166,7 +166,7 @@ The authorization checks produced the required results:
 | Delete pods in `dev` | `no` | Denied because `delete` is not one of the granted verbs. |
 | List pods in `prod` | `no` | Denied because the Role and RoleBinding are scoped only to `dev`. |
 
-![Kubernetes authorization test evidence](task%207.png)
+![Kubernetes authorization test evidence](lab1-images/task%207.png)
 
 The service account identifies, or authenticates, the requester as `system:serviceaccount:dev:dev-user`. Kubernetes then performs authorization against the applicable RBAC rules. Authorization permits `list pods` in `dev`, but blocks deletion because that verb is absent and blocks access to `prod` because the namespaced RoleBinding does not apply there.
 
@@ -199,7 +199,7 @@ subjects:
     namespace: dev
 ```
 
-![RoleBinding YAML verification](verify%20command%20output.png)
+![RoleBinding YAML verification](lab1-images/verify%20command%20output.png)
 
 This verifies that `dev-user-binding` refers to the `pod-reader` Role and binds it to `dev-user` in the `dev` namespace.
 
