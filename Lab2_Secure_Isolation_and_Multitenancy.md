@@ -32,13 +32,13 @@ networking:
 
 The terminal reported that the cluster `ccse-lab2` was created and the kubectl context was set to `kind-ccse-lab2`.
 
-![Cluster creation evidence](SETUP%201.png)
+![Cluster creation evidence](lab2-images/SETUP%201.png)
 
 ### Step 2: Install and verify Calico
 
 Calico v3.27.0 was applied. Its resources were created, and the `calico-node` daemon set successfully rolled out. `kubectl get nodes` showed the control-plane node in `Ready` state.
 
-![Calico installation and ready node](SETUP%201.2.png)
+![Calico installation and ready node](lab2-images/SETUP%201.2.png)
 
 **Result:** The Kubernetes environment was ready with a CNI capable of enforcing network policies.
 
@@ -63,7 +63,7 @@ kubectl get pods,svc -n tenant-a
 kubectl get pods,svc -n tenant-b
 ```
 
-![Tenant namespaces, deployments, pods, and services](TASK%201.png)
+![Tenant namespaces, deployments, pods, and services](lab2-images/TASK%201.png)
 
 **Observation:** Each tenant had its own running pod and service. Both tenants shared the same Kubernetes cluster but were logically organized into different namespaces.
 
@@ -83,7 +83,7 @@ kubectl -n tenant-a run probe --rm -it --image=curlimages/curl --restart=Never -
   curl -s -m 5 "http://${B_IP}" -o /dev/null -w 'HTTP %{http_code}\n'
 ```
 
-![Cross-tenant HTTP 200 before policy](TASK%202.png)
+![Cross-tenant HTTP 200 before policy](lab2-images/TASK%202.png)
 
 **Observed result:** `HTTP 200` was returned. The repeated `HTTP 200` in the evidence came from fallback log streaming after kubectl could not attach to the short-lived container; it represents the same successful probe, not a separate security test.
 
@@ -114,7 +114,7 @@ The quota was then inspected using:
 kubectl describe resourcequota tenant-a-quota -n tenant-a
 ```
 
-![Tenant A resource quota](TASK%203.png)
+![Tenant A resource quota](lab2-images/TASK%203.png)
 
 **Observed result:** The quota limited Tenant A to five pods, one CPU of requested capacity, and 512 MiB of requested memory. At verification time, one pod was counted; CPU and memory requests showed zero because the deployed pod did not declare resource requests.
 
@@ -141,11 +141,11 @@ spec:
     - Ingress
 ```
 
-![Default-deny policy creation](TASK%204.png)
+![Default-deny policy creation](lab2-images/TASK%204.png)
 
 The first attempt to retrieve logs failed because the original `--rm` probe from Task 2 had already been deleted. A persistent test pod was therefore created and its output inspected.
 
-![Post-policy probe showing HTTP 000](TASK%204.1.png)
+![Post-policy probe showing HTTP 000](lab2-images/TASK%204.1.png)
 
 **Observed result:** The post-policy probe returned `HTTP 000`, and the pod ended in `Error`. For curl, code `000` means that no HTTP response was received; together with the five-second timeout and the before-policy `HTTP 200`, this is evidence that the request was blocked.
 
@@ -176,7 +176,7 @@ kubectl auth can-i get secrets -n tenant-a --as="$SA"
 kubectl auth can-i get secrets -n tenant-b --as="$SA"
 ```
 
-![RBAC secret isolation with sample values redacted](Evidence_Redacted/TASK%205%20-%20REDACTED.png)
+![RBAC secret isolation with sample values redacted](lab2-images/TASK%205%20-%20REDACTED.png)
 
 **Observed result:** The authorization result was `yes` for Tenant A and `no` for Tenant B.
 
@@ -206,7 +206,7 @@ docker run --rm -v ccse-vol:/data alpine sh -c \
    rm /data/phi2.txt; echo wiped'
 ```
 
-![Deletion and overwrite evidence with sample data redacted](Evidence_Redacted/TASK%206%20-%20REDACTED.png)
+![Deletion and overwrite evidence with sample data redacted](lab2-images/TASK%206%20-%20REDACTED.png)
 
 **Security interpretation:** An ordinary delete removes the filesystem reference but may leave recoverable bytes in underlying storage. The visible-file `grep` used here cannot inspect unallocated blocks, so the absence of a match does not prove that remanent data was absent. Overwriting before deletion is stronger on simple local media, but copy-on-write filesystems, snapshots, SSD wear levelling, replicas, and provider-managed storage may retain other copies. Cloud systems therefore prefer cryptographic erasure: encrypt the data and securely destroy the encryption key.
 
@@ -219,7 +219,7 @@ kubectl get networkpolicy -A
 kubectl describe resourcequota tenant-a-quota -n tenant-a
 ```
 
-![Final policy and quota verification](LAST.png)
+![Final policy and quota verification](lab2-images/LAST.png)
 
 **Verified state:** `tenant-b` contained `default-deny-ingress`. The `tenant-a-quota` limits remained five pods, one requested CPU, and 512 MiB requested memory.
 
