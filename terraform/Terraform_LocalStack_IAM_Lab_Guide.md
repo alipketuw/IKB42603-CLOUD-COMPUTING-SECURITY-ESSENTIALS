@@ -347,15 +347,6 @@ Terraform is considered Infrastructure as Code because infrastructure resources 
 | Stop and remove LocalStack | Complete | `17-localstack-stop-remove.png` |
 | Required reflection answer | Complete | Answer provided above |
 
-## Missing Items Before Submission
-
-All required command-stage pictures are now present. Two source/workspace items still need attention:
-
-1. Add the tested `main.tf` to the `terraform` submission folder and ensure the username is exactly `CloudAdmin_Aliff`. Do not submit the nearby `main.tf` unchanged because it currently says `CloudAdmin_Ainin`.
-2. If the lecturer expects evidence for every guide step rather than only the formal submission checklist, capture `pwd` and `ls -l` from `~/terraform-iam-lab` to prove the workspace and source file location. A full-file view of `main.tf` would also be stronger than the current partial editor screenshot.
-
-No new apply or destroy run is needed for the required command screenshots. If the correct tested `main.tf` cannot be recovered, recreate it from the censored structure above using the guide-provided LocalStack dummy values, run `terraform fmt` and `terraform validate`, and capture the workspace listing without exposing any token or credential.
-
 ## Conclusion
 
 The evidence proves that Terraform created the four required LocalStack IAM resources, the user inherited administrator permissions through the group, AWS CLI verification matched the desired state, a second plan produced no changes, Terraform destroyed all four resources, and the LocalStack container was removed. The command workflow is complete. The submission is not fully ready only because the correct tested `main.tf` is absent from this folder and the nearby copy contains the wrong username; the workspace listing is also not pictured.
