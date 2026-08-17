@@ -18,16 +18,16 @@ The purpose of Lab 0 was to prepare the local lab environment so the later labs 
 
 The following evidence files were available in the workspace root:
 
-- ![Docker evidence](lab0-images/docker.jpeg)
-- ![AWS CLI evidence](lab0-images/AWS.jpg)
-- ![kind evidence](lab0-images/KIND.jpg)
-- ![kubectl evidence](lab0-images/KUBECTL.jpg)
-- ![OpenSSL evidence](lab0-images/openSSL.jpg)
-- ![oathtool evidence](lab0-images/oathtool.jpg)
-- ![LocalStack evidence](lab0-images/localstack%20aws.jpg)
-- ![LocalStack web interface evidence](lab0-images/localhostweb.jpeg)
-- ![AWS CLI LocalStack configuration evidence](lab0-images/otp%20aws%20cli%20configuration.jpeg)
-- ![Kubernetes cluster evidence](lab0-images/kubernetes%20cluster.jpg)
+- ![Docker evidence](lab-images/lab0/docker.jpeg)
+- ![AWS CLI evidence](lab-images/lab0/AWS.jpg)
+- ![kind evidence](lab-images/lab0/KIND.jpg)
+- ![kubectl evidence](lab-images/lab0/KUBECTL.jpg)
+- ![OpenSSL evidence](lab-images/lab0/openSSL.jpg)
+- ![oathtool evidence](lab-images/lab0/oathtool.jpg)
+- ![LocalStack evidence](lab-images/lab0/localstack%20aws.jpg)
+- ![LocalStack web interface evidence](lab-images/lab0/localhostweb.jpeg)
+- ![AWS CLI LocalStack configuration evidence](lab-images/lab0/otp%20aws%20cli%20configuration.jpeg)
+- ![Kubernetes cluster evidence](lab-images/lab0/kubernetes%20cluster.jpg)
 
 
 ## 3. Step-by-step report
@@ -41,7 +41,7 @@ docker --version
 docker run --rm hello-world
 ```
 
-Evidence: ![Docker verification](lab0-images/docker.jpeg)
+Evidence: ![Docker verification](lab-images/lab0/docker.jpeg)
 
 Observed result:
 - Docker version was reported as 28.5.2+dfsg4.
@@ -57,7 +57,7 @@ The guide required AWS CLI v2 to be installed and verified with:
 aws --version
 ```
 
-Evidence: ![AWS CLI verification](lab0-images/AWS.jpg)
+Evidence: ![AWS CLI verification](lab-images/lab0/AWS.jpg)
 
 Observed result:
 - AWS CLI version 2.36.10 was reported.
@@ -72,7 +72,7 @@ The guide required kind to be installed and verified with:
 kind --version
 ```
 
-Evidence: ![kind verification](lab0-images/KIND.jpg)
+Evidence: ![kind verification](lab-images/lab0/KIND.jpg)
 
 Observed result:
 - kind v0.23.0 was reported.
@@ -87,7 +87,7 @@ The guide required kubectl to be installed and verified with:
 kubectl version --client
 ```
 
-Evidence: ![kubectl verification](lab0-images/KUBECTL.jpg)
+Evidence: ![kubectl verification](lab-images/lab0/KUBECTL.jpg)
 
 Observed result:
 - kubectl client version v1.36.3 was reported.
@@ -105,8 +105,8 @@ oathtool --version
 ```
 
 Evidence:
-- ![OpenSSL verification](lab0-images/openSSL.jpg)
-- ![oathtool verification](lab0-images/oathtool.jpg)
+- ![OpenSSL verification](lab-images/lab0/openSSL.jpg)
+- ![oathtool verification](lab-images/lab0/oathtool.jpg)
 
 Observed result:
 - OpenSSL 3.6.3 was reported.
@@ -124,8 +124,8 @@ curl http://localhost:4566/_localstack/health
 ```
 
 Evidence:
-- ![LocalStack startup evidence](lab0-images/localstack%20aws.jpg)
-- ![LocalStack web interface evidence](lab0-images/localhostweb.jpeg)
+- ![LocalStack startup evidence](lab-images/lab0/localstack%20aws.jpg)
+- ![LocalStack web interface evidence](lab-images/lab0/localhostweb.jpeg)
 
 Observed result:
 - The LocalStack container image was pulled and started.
@@ -145,7 +145,7 @@ EP='--endpoint-url=http://localhost:4566'
 aws $EP sts get-caller-identity
 ```
 
-Evidence: ![AWS CLI LocalStack configuration evidence](lab0-images/otp%20aws%20cli%20configuration.jpeg)
+Evidence: ![AWS CLI LocalStack configuration evidence](lab-images/lab0/otp%20aws%20cli%20configuration.jpeg)
 
 Observed result:
 - The AWS CLI successfully communicated with LocalStack.
@@ -163,7 +163,7 @@ kubectl cluster-info --context kind-ccse
 kubectl get nodes
 ```
 
-Evidence: ![Kubernetes cluster verification](lab0-images/kubernetes%20cluster.jpg)
+Evidence: ![Kubernetes cluster verification](lab-images/lab0/kubernetes%20cluster.jpg)
 
 Observed result:
 - A kind cluster named ccse was created.

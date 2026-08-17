@@ -28,7 +28,7 @@ cat record.txt
 
 The command created `record.txt` and displayed the sample patient record.
 
-![Task 1 - sensitive record created](lab3-images/z1.png)
+![Task 1 - sensitive record created](lab-images/lab3/z1.png)
 
 #### Step 2: Encrypt the record with AES-256-CBC
 
@@ -38,7 +38,7 @@ openssl enc -aes-256-cbc -pbkdf2 -salt -in record.txt -out record.enc
 
 OpenSSL requested and confirmed a passphrase. The passphrase is not displayed or stored in this report.
 
-![Task 1 - AES encryption](lab3-images/z2.png)
+![Task 1 - AES encryption](lab-images/lab3/z2.png)
 
 #### Step 3: Demonstrate that the encrypted file is unreadable
 
@@ -48,7 +48,7 @@ cat record.enc
 
 The terminal displayed binary-looking content instead of the original plaintext, confirming that the file was not human-readable.
 
-![Task 1 - unreadable ciphertext](lab3-images/z3.png)
+![Task 1 - unreadable ciphertext](lab-images/lab3/z3.png)
 
 #### Step 4: Decrypt and verify the record
 
@@ -59,7 +59,7 @@ diff record.txt record.dec.txt && echo 'MATCH: decryption successful'
 
 **Observed result:** `MATCH: decryption successful`
 
-![Task 1 - successful decryption comparison](lab3-images/z4.png)
+![Task 1 - successful decryption comparison](lab-images/lab3/z4.png)
 
 #### Task 1 report question
 
@@ -75,7 +75,7 @@ openssl genrsa -out private.pem 2048
 
 The evidence shows a 2048-bit RSA private key file was created.
 
-![Task 2 - RSA private key generated](lab3-images/z5.png)
+![Task 2 - RSA private key generated](lab-images/lab3/z5.png)
 
 #### Step 2: Derive the public key
 
@@ -85,7 +85,7 @@ openssl rsa -in private.pem -pubout -out public.pem
 
 The public key was successfully written to `public.pem`.
 
-![Task 2 - public key generated](lab3-images/z6.png)
+![Task 2 - public key generated](lab-images/lab3/z6.png)
 
 #### Step 3: Encrypt with the public key
 
@@ -95,7 +95,7 @@ openssl pkeyutl -encrypt -pubin -inkey public.pem -in record.txt -out record.rsa
 
 The encrypted RSA output file was created.
 
-![Task 2 - RSA public-key encryption](lab3-images/z7.png)
+![Task 2 - RSA public-key encryption](lab-images/lab3/z7.png)
 
 #### Step 4: Decrypt with the private key and compare
 
@@ -106,7 +106,7 @@ diff record.txt record.rsa.txt && echo 'MATCH: RSA decryption successful'
 
 **Observed result:** `MATCH: RSA decryption successful`
 
-![Task 2 - RSA private-key decryption](lab3-images/z8.png)
+![Task 2 - RSA private-key decryption](lab-images/lab3/z8.png)
 
 #### Step 5: Sign the record
 
@@ -116,7 +116,7 @@ openssl dgst -sha256 -sign private.pem -out record.sig record.txt
 
 The evidence shows that `record.sig` was created.
 
-![Task 2 - digital signature created](lab3-images/z9.png)
+![Task 2 - digital signature created](lab-images/lab3/z9.png)
 
 #### Step 6: Verify the signature
 
@@ -126,7 +126,7 @@ openssl dgst -sha256 -verify public.pem -signature record.sig record.txt
 
 **Observed result:** `Verified OK`
 
-![Task 2 - signature verified](lab3-images/z11.png)
+![Task 2 - signature verified](lab-images/lab3/z11.png)
 
 The public key is used to encrypt data for the private-key owner, while the private key is used to decrypt it. For signatures, the private key signs and the public key verifies. The verified signature demonstrates origin authentication and integrity, assuming the private key remained under the signer’s control.
 
@@ -141,7 +141,7 @@ openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem \
 
 The evidence shows that `cert.pem` and `key.pem` were created. The private key itself is not reproduced.
 
-![Task 3 - certificate and TLS key generated](lab3-images/z10.png)
+![Task 3 - certificate and TLS key generated](lab-images/lab3/z10.png)
 
 #### Step 2: Start the HTTPS service
 
@@ -159,7 +159,7 @@ docker ps --filter name=tls
 
 The container status was `Up`, and port `8443` was mapped to HTTPS port `443`.
 
-![Task 3 - TLS container running](lab3-images/z12.png)
+![Task 3 - TLS container running](lab-images/lab3/z12.png)
 
 #### Step 3: Connect over TLS
 
@@ -173,7 +173,7 @@ curl -k https://localhost:8443/record.txt
 
 **Observed result:** `Patient: alipp, Diagnosis: confidential`
 
-![Task 3 - successful HTTPS request over TLS](lab3-images/aaa.png)
+![Task 3 - successful HTTPS request over TLS](lab-images/lab3/aaa.png)
 
 TLS encrypts the traffic between client and server so an on-path observer cannot directly read the record. The `-k` option is acceptable for this local exercise because the certificate is self-signed, but it disables certificate trust validation and must not be normal production practice.
 
@@ -230,7 +230,7 @@ openssl enc -aes-256-cbc -pbkdf2 -in record.txt -out record.env.enc \
 
 The evidence shows that the 32-byte plaintext data key and encrypted record were created.
 
-![Task 5 - local envelope encryption](lab3-images/z15.png)
+![Task 5 - local envelope encryption](lab-images/lab3/z15.png)
 
 #### Step 3: Delete plaintext data-key copies
 
@@ -244,7 +244,7 @@ ls -l datakey.enc record.env.enc
 
 **Observed result:** `Plaintext data key deleted`. Only the wrapped key and encrypted data remained.
 
-![Task 5 - plaintext data key removed](lab3-images/z16.png)
+![Task 5 - plaintext data key removed](lab-images/lab3/z16.png)
 
 #### Additional validation: unwrap and decrypt before erasure
 
@@ -262,7 +262,7 @@ diff record.txt record.env.dec.txt && echo 'MATCH: envelope decryption successfu
 
 **Observed result:** `MATCH: envelope decryption successful`
 
-![Task 5 - successful envelope decryption](lab3-images/34.png)
+![Task 5 - successful envelope decryption](lab-images/lab3/34.png)
 
 The temporary recovered plaintext key files were subsequently deleted, as shown in the Task 6 evidence.
 
@@ -286,7 +286,7 @@ aws $EP kms decrypt --key-id "$KEY_B" \
 
 **Observed result:** `IncorrectKeyException`. Tenant B’s key could not unwrap a data key protected by tenant A’s key.
 
-![Task 6 - cross-tenant decryption rejected](lab3-images/3.png)
+![Task 6 - cross-tenant decryption rejected](lab-images/lab3/3.png)
 
 #### Step 3: Schedule deletion of tenant A’s key
 
@@ -337,7 +337,7 @@ da6d4a08d1e1fa61be8cde7f57e1646f216bb29332acda7392687acf8c00e8b3  tampered.txt
 
 The hashes differ, showing that even a small content change is detectable.
 
-![Task 7 - differing SHA-256 hashes](lab3-images/44.png)
+![Task 7 - differing SHA-256 hashes](lab-images/lab3/44.png)
 
 #### Step 2: Build a hash chain
 
@@ -357,7 +357,7 @@ file read  | 6c3adc61ece69412b338e43d761435e95dbfc948253f8f600087b0a4c5ad2d3d
 export data| e1470ccfaf43dcab3c17d5710dc9eacbb7ac65c9f522ca98c2c503431b32da68
 ```
 
-![Task 7 - tamper-evident hash chain](lab3-images/55.png)
+![Task 7 - tamper-evident hash chain](lab-images/lab3/55.png)
 
 ## 4. Short-Answer Questions
 
