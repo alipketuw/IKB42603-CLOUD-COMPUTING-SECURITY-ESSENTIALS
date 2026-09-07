@@ -50,15 +50,15 @@ aws configure set region us-east-1
 aws $EP sts get-caller-identity
 ```
 
-![Figure S1 — Prerequisite checks and LocalStack token configuration with the token redacted](1_redacted.png)
+![Figure S1 — Prerequisite checks and LocalStack token configuration with the token redacted](images/1_redacted.png)
 
-![Figure 1 — LocalStack container healthy and ready](2.png)
+![Figure 1 — LocalStack container healthy and ready](images/2.png)
 
 **Result:** Docker, AWS CLI, curl, and LocalStack were available. The LocalStack container was healthy and displayed `Ready.` The screenshot also shows a successful LocalStack licence activation.
 
 The follow-up caller-identity check returned the LocalStack root identity for account `000000000000`:
 
-![Figure 1A — LocalStack STS caller identity](22.png)
+![Figure 1A — LocalStack STS caller identity](images/22.png)
 
 **Result:** The required `sts get-caller-identity` evidence is now complete and agrees with the account number used in the later IAM and bucket-policy ARNs.
 
@@ -84,7 +84,7 @@ aws $EP s3api put-object --bucket "$BUCKET" \
   --tagging 'classification=confidential'
 ```
 
-![Figure 2 — Bucket creation and classified object uploads](3.png)
+![Figure 2 — Bucket creation and classified object uploads](images/3.png)
 
 The listing showed these three objects:
 
@@ -96,15 +96,15 @@ The listing showed these three objects:
 
 The confidential object returned `classification=confidential`.
 
-![Figure 3 — Object listing and confidential classification tag](4.png)
+![Figure 3 — Object listing and confidential classification tag](images/4.png)
 
 Follow-up evidence shows that the later SSE-KMS object `confidential/record-v2.txt` was also tagged `classification=confidential`:
 
-![Figure 3A — Classification tag applied to the later encrypted object](23.png)
+![Figure 3A — Classification tag applied to the later encrypted object](images/23.png)
 
 Both remaining versions of `confidential/record.txt` were tagged individually by supplying each exact version ID, and each version's tag was verified:
 
-![Figure 3B — Confidential classification verified on both remaining object versions](24.png)
+![Figure 3B — Confidential classification verified on both remaining object versions](images/24.png)
 
 **Result:** All data objects and remaining data versions shown in the evidence now carry an appropriate classification tag. A delete marker is not an object-data version and does not carry the record's content.
 
@@ -135,7 +135,7 @@ A resource-based bucket policy granted `s3:GetObject` to every principal for eve
 }
 ```
 
-![Figure 4 — Public bucket policy and anonymous HTTP 200 data exposure](5.png)
+![Figure 4 — Public bucket policy and anonymous HTTP 200 data exposure](images/5.png)
 
 **Result:** The anonymous request returned `HTTP 200` and printed the simulated patient record. The single policy value responsible for making access anonymous was the wildcard `"*"` in `"Principal": "*"`.
 
@@ -150,7 +150,7 @@ BlockPublicPolicy     = true
 RestrictPublicBuckets = true
 ```
 
-![Figure 5 — Four Block Public Access flags and LocalStack anonymous retest](6.png)
+![Figure 5 — Four Block Public Access flags and LocalStack anonymous retest](images/6.png)
 
 On real AWS, **`BlockPublicPolicy=true`** would reject a new public bucket policy. `RestrictPublicBuckets=true` would additionally restrict access if a bucket already had a public policy. In this LocalStack run, the public policy was accepted and the anonymous retest still returned HTTP 200. The underlying cause was not established, so this evidence confirms only that the settings were configured; it does not prove that anonymous access was prevented.
 
@@ -169,7 +169,7 @@ A least-privilege policy was then written for the LocalStack account root, with 
 }
 ```
 
-![Figure 6 — Least-privilege policy and anonymous retest](7.png)
+![Figure 6 — Least-privilege policy and anonymous retest](images/7.png)
 
 **Observed result:** Even after installing the restricted policy, the anonymous request again returned HTTP 200. The policy document demonstrates the intended least-privilege scope, but this screenshot does not demonstrate effective anonymous denial. The expected result was HTTP 403 Access Denied.
 
@@ -182,15 +182,15 @@ ANALYST_KEY_ID='[REDACTED]'
 ANALYST_SECRET='[REDACTED]'
 ```
 
-![Figure S2 — Analyst creation and access-key configuration with both credentials redacted](8_redacted.png)
+![Figure S2 — Analyst creation and access-key configuration with both credentials redacted](images/8_redacted.png)
 
 The bucket resource policy separately allowed the analyst to read `internal/*` and explicitly denied every S3 action on `confidential/*`.
 
-![Figure 7 — Analyst resource policy and successful internal-object request](9.png)
+![Figure 7 — Analyst resource policy and successful internal-object request](images/9.png)
 
 The internal request succeeded and returned the staff roster. The confidential request unexpectedly also succeeded in LocalStack. The evidence then prints both complete policy documents, making the policy intent auditable.
 
-![Figure 8 — Unexpected confidential success and both policy documents](10.png)
+![Figure 8 — Unexpected confidential success and both policy documents](images/10.png)
 
 Correct AWS policy evaluation for the two requests is:
 
@@ -211,7 +211,7 @@ Correct AWS policy evaluation for the two requests is:
 
 A dedicated KMS key was created. The bucket's default server-side-encryption rule was configured with `SSEAlgorithm=aws:kms`, the key ID `917be7c0-b6a7-476c-9fde-bb7c83d27c0f`, and `BucketKeyEnabled=true`.
 
-![Figure 9 — KMS key creation and bucket default-encryption configuration](11.png)
+![Figure 9 — KMS key creation and bucket default-encryption configuration](images/11.png)
 
 `confidential/record-v2.txt` was uploaded without any encryption argument. The response and subsequent `head-object` query showed:
 
@@ -219,7 +219,7 @@ A dedicated KMS key was created. The bucket's default server-side-encryption rul
 aws:kms  arn:aws:kms:us-east-1:000000000000:key/917be7c0-b6a7-476c-9fde-bb7c83d27c0f  True
 ```
 
-![Figure 10 — Upload automatically protected by default SSE-KMS](12.png)
+![Figure 10 — Upload automatically protected by default SSE-KMS](images/12.png)
 
 **Result:** The control was applied by the bucket even though the uploader did not request encryption. The bucket key reduces repeated KMS calls while preserving the server-side encryption model.
 
@@ -239,7 +239,7 @@ X-Amz-Signature=[REDACTED]
 
 The first request returned the roster and HTTP 200. After a 65-second wait, the same URL still returned HTTP 200. LocalStack therefore did not enforce expiry in this run. `X-Amz-Expires=60` expresses the validity interval from `X-Amz-Date`; `X-Amz-Signature` is the cryptographic proof binding the signed request details, including the credential scope, method/action, target object, timestamp, and signed headers. Possession of the complete URL acts as a bearer capability until it expires or the signing credential is revoked.
 
-![Figure S3 — Presigned URL redacted while preserving the initial and post-expiry HTTP results](13_redacted.png)
+![Figure S3 — Presigned URL redacted while preserving the initial and post-expiry HTTP results](images/13_redacted.png)
 
 The following resource policy was then applied:
 
@@ -262,19 +262,19 @@ The following resource policy was then applied:
 
 The policy file was recreated for the follow-up test. A preliminary analyst listing established the baseline before the policy was applied:
 
-![Figure 10A — SecureTransport policy preparation, analyst baseline, and policy application](26.png)
+![Figure 10A — SecureTransport policy preparation, analyst baseline, and policy application](images/26.png)
 
 Because the LocalStack endpoint is `http://localhost:4566`, `aws:SecureTransport` should be `false`, the explicit Deny should match, and all S3 requests should fail. Instead, the object listing succeeded:
 
-![Figure 11 — SecureTransport policy did not cause the expected LocalStack failure](14.png)
+![Figure 11 — SecureTransport policy did not cause the expected LocalStack failure](images/14.png)
 
 The policy was removed before continuing.
 
-![Figure 12 — SecureTransport policy removal](15.png)
+![Figure 12 — SecureTransport policy removal](images/15.png)
 
 A definitive retest then retrieved the bucket policy to prove that it was active. With that verified policy in place, `list-objects-v2` succeeded under both the `default` and `analyst` profiles. The policy was successfully removed afterward:
 
-![Figure 12A — Active SecureTransport policy, successful listings from both profiles, and policy removal](27.png)
+![Figure 12A — Active SecureTransport policy, successful listings from both profiles, and policy removal](images/27.png)
 
 **Retest conclusion:** The commands and retest procedure were completed correctly, but the required `AccessDenied` outcome was not demonstrated for either profile. The underlying cause remains unconfirmed. The LocalStack freemium licence or feature coverage is a possible factor, but the evidence does not establish it as the cause. Repeating the same unchanged commands provides no additional evidential value. Resolving the missing denial result requires either an environment with working IAM/resource-policy enforcement or the lecturer's acceptance of the documented result.
 
@@ -284,15 +284,15 @@ A definitive retest then retrieved the bucket policy to prove that it was active
 
 Bucket versioning was enabled. Two revisions of `confidential/record.txt` were uploaded after the original pre-versioning object. The listing showed two generated version IDs plus the original `null` version.
 
-![Figure 13 — Versioning enabled, three versions listed, and delete marker created](16.png)
+![Figure 13 — Versioning enabled, three versions listed, and delete marker created](images/16.png)
 
 Deleting the key created a delete marker. A normal `get-object` then returned `NoSuchKey`, but explicitly reading `--version-id null` recovered the original unredacted simulated record. The `null` version was subsequently deleted by ID.
 
-![Figure 14 — Delete marker, ordinary read failure, recovered old data, and null-version deletion](17.png)
+![Figure 14 — Delete marker, ordinary read failure, recovered old data, and null-version deletion](images/17.png)
 
 The post-deletion listing still contained two versions:
 
-![Figure 15 — Two object versions remain after deleting the null version](18.png)
+![Figure 15 — Two object versions remain after deleting the null version](images/18.png)
 
 **Result:** The task successfully demonstrates data remanence: a normal delete changes the current view but does not destroy historical content. However, complete patient-data erasure was not demonstrated because two object versions and the delete marker were not shown as removed.
 
@@ -303,11 +303,11 @@ Two enabled lifecycle rules were installed:
 - `RetireConfidentialRecords`: expire current confidential objects after 365 days and noncurrent versions after 30 days.
 - `AbortIncompleteUploads`: abort incomplete multipart uploads after seven days.
 
-![Figure 16 — Lifecycle configuration and enabled-rules table](19.png)
+![Figure 16 — Lifecycle configuration and enabled-rules table](images/19.png)
 
 At the KMS layer, a test ciphertext was created under the bucket key. The key was disabled, and a subsequent KMS decrypt returned `DisabledException`. Key deletion was then scheduled with a seven-day waiting period. The recorded key state became `PendingDeletion` with deletion date `2026-09-14T09:35:55.116218-04:00`.
 
-![Figure 17 — Failed KMS decrypt and key PendingDeletion state](20.png)
+![Figure 17 — Failed KMS decrypt and key PendingDeletion state](images/20.png)
 
 LocalStack nevertheless returned `confidential/record-v2.txt` through S3 after the KMS key was disabled. The successful KMS-layer failure is therefore the compensating evidence requested by the guide. On AWS, inaccessible or finally destroyed KMS key material prevents decryption of ciphertext encrypted solely under that key.
 
@@ -379,13 +379,13 @@ AbortIncompleteUploads     Enabled
 PendingDeletion
 ```
 
-![Figure 18 — Final verification command and output](21.png)
+![Figure 18 — Final verification command and output](images/21.png)
 
 This proves that the four Block Public Access flags are stored, versioning is enabled, default encryption uses the dedicated KMS key, both lifecycle rules are enabled, and the key is scheduled for deletion. It does **not** prove that anonymous access is refused, that every object version has been erased, or that KMS deletion has completed.
 
 A follow-up final-posture check confirmed that no bucket policy exists. It also repeated the tag check for `confidential/record-v2.txt`. However, the anonymous request still returned HTTP 200:
 
-![Figure 18A — Final bucket-policy, anonymous-access, and classification check](25.png)
+![Figure 18A — Final bucket-policy, anonymous-access, and classification check](images/25.png)
 
 **Interpretation:** In this LocalStack run, anonymous access to `confidential/record-v2.txt` returned **HTTP 200** despite all four Block Public Access flags being enabled and the bucket policy having been removed, as confirmed by `NoSuchBucketPolicy`. Although the container was configured with `ENFORCE_IAM=1`, the observed result shows that the expected access restriction was not enforced. The underlying cause was not established. Therefore, the evidence confirms that the security settings were configured, but it does **not** demonstrate successful prevention of anonymous access; the expected result was **HTTP 403 Access Denied**.
 
@@ -397,7 +397,7 @@ After all evidence had been collected, the remaining AWS resources and LocalStac
 
 The cleanup procedure deleted all remaining object versions and delete markers, verified the bucket was empty, removed the bucket policy, deleted the bucket, removed all analyst user access keys and inline policies, deleted the analyst user, and stopped/removed the LocalStack container.
 
-![Figure 28 — Cleanup and teardown: object versions deleted, bucket removed, analyst user and credentials removed, LocalStack container stopped](28.png)
+![Figure 28 — Cleanup and teardown: object versions deleted, bucket removed, analyst user and credentials removed, LocalStack container stopped](images/28.png)
 
 **Result:** The cleanup executed successfully. All resources created during the lab are now removed:
 - ✓ Deleted all remaining object versions and delete markers
